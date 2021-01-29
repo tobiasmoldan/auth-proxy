@@ -7,6 +7,8 @@ pub enum Error {
     Bincode(#[from] bincode::Error),
     #[error("api with name {0} already exists")]
     ApiAlreadyExists(String),
+    #[error("cell already set")]
+    CellSetError,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

@@ -1,5 +1,4 @@
 use log::debug;
-use shadow_rs::new;
 
 mod arguments;
 mod error;
@@ -20,9 +19,5 @@ async fn main() {
         user, password_hash, port
     );
 
-    storage::get_api("test").unwrap();
-    storage::new_api("test", &storage::Api::default())
-        .await
-        .unwrap();
-    println!("{:?}", storage::get_api("test").unwrap().unwrap());
+    storage::init().unwrap();
 }
