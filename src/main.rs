@@ -1,6 +1,9 @@
 use log::debug;
+use shadow_rs::new;
 
 mod arguments;
+mod error;
+mod storage;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -16,4 +19,10 @@ async fn main() {
         "user: {}, password_hash: {}, port: {}",
         user, password_hash, port
     );
+
+    storage::get_api("test").unwrap();
+    storage::new_api("test", &storage::Api::default())
+        .await
+        .unwrap();
+    println!("{:?}", storage::get_api("test").unwrap().unwrap());
 }
