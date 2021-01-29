@@ -53,7 +53,7 @@ pub fn parse() -> Arguments {
     }
 }
 
-pub fn get_port(matches: &ArgMatches) -> u16 {
+fn get_port(matches: &ArgMatches) -> u16 {
     let mut port = env::var("AUTHPRX_PORT")
         .ok()
         .map(|p| u16::from_str(&p).ok())
@@ -75,7 +75,7 @@ pub fn get_port(matches: &ArgMatches) -> u16 {
     }
 }
 
-pub fn get_user(matches: &ArgMatches) -> String {
+fn get_user(matches: &ArgMatches) -> String {
     let mut user = env::var("AUTHPRX_USER").ok();
     if let Some(u) = matches.value_of("user").map(|p| p.to_string()) {
         user = Some(u);
@@ -89,7 +89,7 @@ pub fn get_user(matches: &ArgMatches) -> String {
     }
 }
 
-pub fn get_password(matches: &ArgMatches) -> String {
+fn get_password(matches: &ArgMatches) -> String {
     let mut password = env::var("AUTHPRX_PASSWORD").ok();
     if let Some(p) = matches.value_of("password").map(|p| p.to_string()) {
         password = Some(p);
