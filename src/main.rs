@@ -9,14 +9,14 @@ async fn main() {
     env_logger::init();
 
     let arguments::Arguments {
-        port,
+        addr,
         user,
         password_hash,
     } = arguments::parse();
 
     debug!(
-        "user: {}, password_hash: {}, port: {}",
-        user, password_hash, port
+        "user: {}, password_hash: {}, addr: {}",
+        user, password_hash, addr
     );
 
     storage::init().unwrap();

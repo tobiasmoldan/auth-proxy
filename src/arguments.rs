@@ -1,7 +1,8 @@
 use bcrypt::{hash, DEFAULT_COST};
-use clap::{App, Arg, ArgMatches};
+use clap::{crate_authors, crate_description, crate_name, App, Arg, ArgMatches};
 use log::{error, warn};
 use std::env;
+use std::net::{IpAddr, SocketAddr};
 use std::process::exit;
 use std::str::FromStr;
 
@@ -11,16 +12,16 @@ shadow!(build);
 
 #[derive(Debug)]
 pub struct Arguments {
-    pub port: u16,
+    pub addr: SocketAddr,
     pub user: String,
     pub password_hash: String,
 }
 
 pub fn parse() -> Arguments {
-    let matches = App::new("Auth Proxy")
+    let matches = App::new(crate_name!())
         .version(build::clap_version().as_str())
-        .about("Provides simple auth for all your APIs!")
-        .author("Tobias Moldan <tobias.moldan@gmail.com>")
+        .about(crate_description!())
+        .author(crate_authors!())
         .arg(
             Arg::with_name("port")
                 .short("p")
@@ -44,12 +45,42 @@ pub fn parse() -> Arguments {
                 .help("Superuser password, can also be set via env variable 'AUTHPRX_PASSWORD'")
                 .takes_value(true),
         )
+        .arg(
+            Arg::with_name("address")
+                .long("address")
+                .short("a")
+                .value_name("ADDRESS")
+                .help("address to bind to, can also be set via env variable 'AUTHPRX_ADDRESS'")
+                .takes_value(true),
+        )
         .get_matches();
 
     Arguments {
-        port: get_port(&matches),
+        addr: SocketAddr::from((get_address(&matches), get_port(&matches))),
         user: get_user(&matches),
         password_hash: get_password(&matches),
+    }
+}
+
+fn get_address(matches: &ArgMatches) -> IpAddr {
+    let mut addr = env::var("AUTHPRX_ADDRESS")
+        .ok()
+        .map(|s| IpAddr::from_str(&s).ok())
+        .flatten();
+
+    if let Some(a) = matches
+        .value_of("address")
+        .map(|s| IpAddr::from_str(s).ok())
+        .flatten()
+    {
+        addr = Some(a);
+    }
+
+    if let Some(a) = addr {
+        a
+    } else {
+        warn!("no address given, using 0.0.0.0");
+        IpAddr::from_str("0.0.0.0").unwrap()
     }
 }
 
